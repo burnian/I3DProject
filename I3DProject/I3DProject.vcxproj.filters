@@ -15,16 +15,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="I3DConsole.cpp">
+    <ClCompile Include="mini3d.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="I3DLib.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="I3DLib.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

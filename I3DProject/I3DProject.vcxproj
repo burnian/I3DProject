@@ -68,11 +68,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="I3DConsole.cpp" />
-    <ClCompile Include="I3DLib.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="I3DLib.h" />
+    <ClCompile Include="mini3d.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

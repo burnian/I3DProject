@@ -113,7 +113,7 @@ void matrix_sub(matrix_t *c, const matrix_t *a, const matrix_t *b) {
 }
 
 // c = a * b
-void matrix_mul(matrix_t *c, const matrix_t *a, const matrix_t *b) {
+void mat_mul_mat(matrix_t *c, const matrix_t *a, const matrix_t *b) {
 	matrix_t z;
 	int i, j;
 	for (i = 0; i < 4; i++) {
@@ -124,7 +124,7 @@ void matrix_mul(matrix_t *c, const matrix_t *a, const matrix_t *b) {
 						(a->m[j][3] * b->m[3][i]);
 		}
 	}
-	c[0] = z; *c = z;
+	c[0] = z;
 }
 
 // c = a * f
@@ -137,7 +137,7 @@ void matrix_scale(matrix_t *c, const matrix_t *a, float f) {
 }
 
 // y = x * m
-void matrix_apply(vector_t *y, const vector_t *x, const matrix_t *m) {
+void vec_mul_mat(vector_t *y, const vector_t *x, const matrix_t *m) {
 	float X = x->x, Y = x->y, Z = x->z, W = x->w;
 	y->x = X * m->m[0][0] + Y * m->m[1][0] + Z * m->m[2][0] + W * m->m[3][0];
 	y->y = X * m->m[0][1] + Y * m->m[1][1] + Z * m->m[2][1] + W * m->m[3][1];
@@ -145,6 +145,7 @@ void matrix_apply(vector_t *y, const vector_t *x, const matrix_t *m) {
 	y->w = X * m->m[0][3] + Y * m->m[1][3] + Z * m->m[2][3] + W * m->m[3][3];
 }
 
+// 单位阵
 void matrix_set_identity(matrix_t *m) {
 	m->m[0][0] = m->m[1][1] = m->m[2][2] = m->m[3][3] = 1.0f; 
 	m->m[0][1] = m->m[0][2] = m->m[0][3] = 0.0f;
@@ -153,6 +154,7 @@ void matrix_set_identity(matrix_t *m) {
 	m->m[3][0] = m->m[3][1] = m->m[3][2] = 0.0f;
 }
 
+// 0阵
 void matrix_set_zero(matrix_t *m) {
 	m->m[0][0] = m->m[0][1] = m->m[0][2] = m->m[0][3] = 0.0f;
 	m->m[1][0] = m->m[1][1] = m->m[1][2] = m->m[1][3] = 0.0f;
@@ -189,14 +191,17 @@ void matrix_set_rotate(matrix_t *m, float x, float y, float z, float theta) {
 	m->m[0][0] = 1 - 2 * y * y - 2 * z * z;
 	m->m[1][0] = 2 * x * y - 2 * w * z;
 	m->m[2][0] = 2 * x * z + 2 * w * y;
+
 	m->m[0][1] = 2 * x * y + 2 * w * z;
 	m->m[1][1] = 1 - 2 * x * x - 2 * z * z;
 	m->m[2][1] = 2 * y * z - 2 * w * x;
+	
 	m->m[0][2] = 2 * x * z - 2 * w * y;
 	m->m[1][2] = 2 * y * z + 2 * w * x;
 	m->m[2][2] = 1 - 2 * x * x - 2 * y * y;
+	
 	m->m[0][3] = m->m[1][3] = m->m[2][3] = 0.0f;
-	m->m[3][0] = m->m[3][1] = m->m[3][2] = 0.0f;	
+	m->m[3][0] = m->m[3][1] = m->m[3][2] = 0.0f;
 	m->m[3][3] = 1.0f;
 }
 
@@ -256,8 +261,8 @@ typedef struct {
 // 矩阵更新，计算 transform = world * view * projection
 void transform_update(transform_t *ts) {
 	matrix_t m;
-	matrix_mul(&m, &ts->world, &ts->view);
-	matrix_mul(&ts->transform, &m, &ts->projection);
+	mat_mul_mat(&m, &ts->world, &ts->view);
+	mat_mul_mat(&ts->transform, &m, &ts->projection);
 }
 
 // 初始化，设置屏幕长宽
@@ -273,7 +278,7 @@ void transform_init(transform_t *ts, int width, int height) {
 
 // 将矢量 x 进行 project 
 void transform_apply(const transform_t *ts, vector_t *y, const vector_t *x) {
-	matrix_apply(y, x, &ts->transform);
+	vec_mul_mat(y, x, &ts->transform);
 }
 
 // 检查齐次坐标同 cvv 的边界用于视锥裁剪
